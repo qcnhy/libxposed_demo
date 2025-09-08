@@ -37,7 +37,8 @@ public class HookList extends XposedModule {
     public void hookNoUtilsAssembleRequest(XposedModuleInterface.PackageLoadedParam param) {
         try {
             final String className = "com.infothinker.gzmetro.util.nohttp.NoUtils";
-            ClassLoader classLoader = context.getClassLoader();
+            ClassLoader classLoader = param.getClassLoader(); //优先使用
+//            ClassLoader classLoader = context.getClassLoader();
             Class<?> clazz = findClassOrLog(className, classLoader);
             if (clazz == null) return;
 
