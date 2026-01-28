@@ -43,7 +43,6 @@ public class MainModule extends XposedModule {
         super(base, param);
 
         hookList = new HookList(base, param);
-//        initNotificationManager();
         mainModule = this;
         log("MainModule at " + param.getProcessName());//类尚未完全初始化 不能调用outlog
     }
@@ -68,12 +67,11 @@ public class MainModule extends XposedModule {
     }
 
 
-
-
-    private void printClassLoaderInfo(PackageLoadedParam param) {
+    private ClassLoader printClassLoader(PackageLoadedParam param) {
         try {
             ClassLoader cl = param.getClassLoader();
             outlog("[getClassLoader] => " + "class=" + cl.getClass().getName() + ", " + "toString=" + cl.toString() + ", " + "hash=" + cl.hashCode());
+            return cl;
         } catch (Exception e) {
             outlog("[getClassLoader] ❌ error: " + e);
         }
@@ -82,12 +80,16 @@ public class MainModule extends XposedModule {
             try {
                 ClassLoader dcl = param.getDefaultClassLoader();
                 outlog("[getDefaultClassLoader] => " + "class=" + dcl.getClass().getName() + ", " + "toString=" + dcl.toString() + ", " + "hash=" + dcl.hashCode());
+                return dcl;
             } catch (Exception e) {
                 outlog("[getDefaultClassLoader] ❌ error: " + e);
             }
         } else {
+
             outlog("[getDefaultClassLoader] ⚠️ 不支持 (系统版本 < Q)");
+            return null;
         }
+        return null;
     }
 
     private String getCurrentProcessName(ClassLoader cl) {
@@ -107,75 +109,69 @@ public class MainModule extends XposedModule {
 
         super.onPackageLoaded(param);
         outlog("welcome");
-        String processName = getCurrentProcessName(param.getClassLoader());
+        String processName = getCurrentProcessName(printClassLoader(param));
         outlog("onPackageLoaded package: " + param.getPackageName() + ", process: " + processName);
-        outlog("param classloader is " + param.getClassLoader());
+        outlog("module apk path: " + this.getApplicationInfo().sourceDir);
         if (context == null) {
             context = getSystemContext();
-        } else {
+        }
+        if (context != null) {
             outlog("context classloader is " + context.getClassLoader());
         }
-        outlog("module apk path: " + this.getApplicationInfo().sourceDir);
-        printClassLoaderInfo(param);
-        outlog("----------");
-        if (processName.equals("com.autonavi.minimap")) {
+        outlog("----------初始化信息完成----------");
+        if (processName.equals("com.autonavi.minimap")) {//修改匹配的包名
             if (param.isFirstPackage()) {
                 outlog("First package ...)");
                 try {
-                    outlog("Trying to find classes & methods to hook");
-//                    final String className = param.getPackageName() + ".MainActivity";
+                    outlog("Hook Start");
                     outlog(Arrays.toString(param.getClassLoader().getClass().getDeclaredFields()));//查看参数的所有属性
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        try {
+                        try {//Hook入口，查找类和方法
 //                            hookList.hookNoUtilsAssembleRequest(param);
 //                            hookList.hookGetQrCodeStr(param);
                         } catch (Exception e) {
                             outlog("Delayed hook failed: " + e);
                         }
                     }, 3000); // 延迟 3 秒
-//                Class<?> clazz = ClassUtils.getClass(param.getClassLoader(), className, false);
-//                if (clazz == null) {
-//                    outlog("Failed to find the class :: " + className);
-//                    return;
-//                }
-//                outlog("Found the class  to hook  :: " + clazz);
-//                final String methodName = "J0";
-//                Method method = clazz.getDeclaredMethod(methodName);
-//                outlog("Found the method to be hooked :: " + method);
-//                hook(method, MyHooker.class);
-                    outlog("hooking completed :)");
+//                    try {//Hook入口，查找类和方法
+////                            hookList.hookNoUtilsAssembleRequest(param);
+////                            hookList.hookGetQrCodeStr(param);
+//                    } catch (Exception e) {
+//                        outlog("Delayed hook failed: " + e);
+//                    }//无需延迟
+                    outlog("Hook completed :)");
                 } catch (Exception ex) {
-                    outlog("Error in finding class method & hooking :: " + ex);
+                    outlog("Hook failed: " + ex);
                 }
             } else {
                 outlog("Not the first package...");
                 // we can hook other package loaded by the Android app here if we need to do so.
             }
-        } else if (processName.startsWith("com.autonavi.minimap:")) {
+        } else if (processName.startsWith("com.autonavi.minimap:")) {//修改匹配的包名
             outlog("子进程，执行子进程hook或者跳过");
         } else {
             outlog("未知进程，忽略");
         }
 
     }
-
-    @XposedHooker
-    static public class MyHooker implements XposedInterface.Hooker {
-        @BeforeInvocation
-        public static MyHooker beforeInvocation(BeforeHookCallback callback) {
-            outlog("beforeInvocation values :: " + Arrays.toString(callback.getArgs()));
-            return new MyHooker();
-
-        }
-
-        @AfterInvocation
-        public static void afterInvocation(AfterHookCallback callback, MyHooker context) {
-            outlog("afterInvocation callback args: " + Arrays.toString(callback.getArgs()));
-            outlog("afterInvocation val: " + context.toString());
-//            HashMap<String, Object> map = new HashMap<>();
-//            map.put("noAd", true);    `
-//            callback.setResult(map);
-        }
-    }
+// 类结构 建议还是新建类文件，避免混乱
+//    @XposedHooker
+//    static public class MyHooker implements XposedInterface.Hooker {
+//        @BeforeInvocation
+//        public static MyHooker beforeInvocation(BeforeHookCallback callback) {
+//            outlog("beforeInvocation values :: " + Arrays.toString(callback.getArgs()));
+//            return new MyHooker();
+//
+//        }
+//
+//        @AfterInvocation
+//        public static void afterInvocation(AfterHookCallback callback, MyHooker context) {
+//            outlog("afterInvocation callback args: " + Arrays.toString(callback.getArgs()));
+//            outlog("afterInvocation val: " + context.toString());
+////            HashMap<String, Object> map = new HashMap<>();
+////            map.put("noAd", true);    `
+////            callback.setResult(map);
+//        }
+//    }
 
 }

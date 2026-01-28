@@ -33,7 +33,7 @@ public class HookList extends XposedModule {
             return null;
         }
     }
-//示例
+//Hook 入口类示例 查找类名和方法进行Hook
     public void hookNoUtilsAssembleRequest(XposedModuleInterface.PackageLoadedParam param) {
         try {
             final String className = "com.infothinker.gzmetro.util.nohttp.NoUtils";
