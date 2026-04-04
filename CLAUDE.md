@@ -54,6 +54,15 @@ In [OutLog.java](app/src/main/java/com/qcnhy/demo/OutLog.java), set `CLEAR_LOG_O
 - `true`: Clear log files on each module load (default)
 - `false`: Keep historical logs (append mode)
 
+### Stack Trace
+`OutLog.outlog()` automatically prints stack trace with each log message. Use stack traces to:
+- Identify the complete call path from entry point to target method
+- Find upstream hook points that intercept multiple calls at once
+- Understand the execution flow and class relationships
+- Discover hidden methods that call your target method
+
+**Tip:** When looking for hook points, trace from the bottom of the stack upward. Hooking earlier entry points (closer to the top) often provides better coverage and more control over the execution flow.
+
 ### Xposed Configuration
 - [module.prop](app/src/main/resources/META-INF/xposed/module.prop) - Module metadata (API version)
 - [scope.list](app/src/main/resources/META-INF/xposed/scope.list) - Target app package names

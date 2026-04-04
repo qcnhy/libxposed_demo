@@ -102,7 +102,48 @@ public class OutLog {
         // 写文件
         writeLogToFile(msg);
 
+        // 打印堆栈
+        String stackTrace = getStackTraceString();
+        System.out.println(stackTrace);
+        writeLogToFile(stackTrace);
+        mainModule.log(stackTrace);
+
         mainModule.log(msg);
+    }
+
+    /**
+     * 获取当前调用堆栈字符串
+     * 过滤掉 OutLog 自身的堆栈帧
+     *
+     * @return 格式化的堆栈字符串
+     */
+    public static String getStackTraceString() {
+        StringBuilder sb = new StringBuilder("--- Stack Trace ---\n");
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+        // 跳过前几帧：getStackTrace、getStackTraceString、outlog
+        // 从实际调用点开始打印
+        for (int i = 3; i < stackTrace.length; i++) {
+            StackTraceElement element = stackTrace[i];
+            String className = element.getClassName();
+
+            // 过滤掉 OutLog 类本身的堆栈帧
+            if (className.startsWith("com.qcnhy.demo.OutLog")) {
+                continue;
+            }
+
+            sb.append("  at ")
+              .append(element.getClassName())
+              .append(".")
+              .append(element.getMethodName())
+              .append("(")
+              .append(element.getFileName())
+              .append(":")
+              .append(element.getLineNumber())
+              .append(")\n");
+        }
+        sb.append("--- End Stack Trace ---");
+        return sb.toString();
     }
 
     private static void writeLogToFile(String msg) {
