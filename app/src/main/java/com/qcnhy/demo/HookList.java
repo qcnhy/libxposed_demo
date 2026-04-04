@@ -51,7 +51,7 @@ public class HookList extends XposedModule {
             );
             outlog("✅ Found method: " + method);
 
-            hook(method, assembleRequestHooker.class);
+            hook(method, ExampleHooker.class);
             outlog("🎯 Hooking assembleRequest completed");
         } catch (Exception e) {
             outlog("❗ Error hooking assembleRequest: " + e);
