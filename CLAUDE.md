@@ -207,14 +207,14 @@ If module is not loaded at all, try in LSPosed:
 
 ## Development Workflow
 
-After each modification, increment version number in `app/build.gradle.kts`:
+After each build and install:
+1. Force stop the target app (`adb shell am force-stop {package}`)
+2. Clear log files if needed
+3. Do NOT auto-launch the app - user will open manually
+
+Before pushing code, increment version number in `app/build.gradle.kts`:
 - `versionCode`: Increment by 1
 - `versionName`: Follow x.y.z format
   - x: Major changes (architecture, incompatible changes)
   - y: Feature updates (new features, modules)
   - z: Bug fixes (fixes, small tweaks)
-
-After each build and install:
-1. Force stop the target app (`adb shell am force-stop {package}`)
-2. Clear log files if needed
-3. Do NOT auto-launch the app - user will open manually
