@@ -17,6 +17,49 @@ public class OutLog {
 
     private static NotificationManager notificationManager;
     private static final String CHANNEL_ID = "log_channel";
+
+    /**
+     * 是否在模块加载时清空日志文件
+     * 设置为 true 可在每次启动时清空旧日志
+     * 设置为 false 则保留历史日志（追加模式）
+     */
+    public static boolean CLEAR_LOG_ON_START = true;
+
+    /**
+     * 清空日志文件
+     * 删除内部存储和外部存储中的 tip.txt
+     */
+    public static void clearLogFiles() {
+        if (context == null) return;
+
+        // 清空内部存储日志
+        File internalFile = new File(context.getFilesDir(), "tip.txt");
+        if (internalFile.exists()) {
+            internalFile.delete();
+        }
+
+        // 清空外部存储日志
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File externalDir = context.getExternalFilesDir(null);
+            if (externalDir != null) {
+                File externalFile = new File(externalDir, "tip.txt");
+                if (externalFile.exists()) {
+                    externalFile.delete();
+                }
+            }
+        }
+    }
+
+    /**
+     * 初始化日志（根据开关决定是否清空）
+     * 在 MainModule 构造函数中调用
+     */
+    public static void initLog() {
+        if (CLEAR_LOG_ON_START) {
+            clearLogFiles();
+        }
+    }
+
     private static void initNotificationManager() {
         if (context == null) {
 

@@ -49,6 +49,11 @@ This is an Android Xposed module demo project using libxposed-api. The module de
 
 **Note:** `{hooked_app_package}` is the target app being hooked, not the module package.
 
+### Log Clear Switch
+In [OutLog.java](app/src/main/java/com/qcnhy/demo/OutLog.java), set `CLEAR_LOG_ON_START`:
+- `true`: Clear log files on each module load (default)
+- `false`: Keep historical logs (append mode)
+
 ### Xposed Configuration
 - [module.prop](app/src/main/resources/META-INF/xposed/module.prop) - Module metadata (API version)
 - [scope.list](app/src/main/resources/META-INF/xposed/scope.list) - Target app package names

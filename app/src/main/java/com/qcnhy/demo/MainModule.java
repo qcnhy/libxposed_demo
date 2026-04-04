@@ -44,6 +44,10 @@ public class MainModule extends XposedModule {
 
         hookList = new HookList(base, param);
         mainModule = this;
+
+        // 初始化日志（根据开关决定是否清空旧日志）
+        OutLog.initLog();
+
         log("MainModule at " + param.getProcessName());//类尚未完全初始化 不能调用outlog
     }
 
