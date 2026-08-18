@@ -135,6 +135,13 @@ public class ExampleHooker implements XposedInterface.Hooker {
     /**
      * 方法执行前回调
      * 可用于：修改参数、跳过原方法、记录调用
+     *
+     * 日志分级示例（OutLog v2，详见 OutLog.java 头注释与 log_config.example.json）：
+     *   debug(msg)  高频明细（默认不落盘）
+     *   info(msg)   常规信息（默认级别）
+     *   warn(msg)   警告
+     *   error(msg)  错误（自动附堆栈 + 通知栏）；error(msg, throwable)
+     *   outlog(msg) 兼容旧调用 = info
      */
     @BeforeInvocation
     public static void before(@NonNull XposedInterface.BeforeHookCallback callback) {

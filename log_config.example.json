@@ -1,0 +1,9 @@
+{
+  "_说明": "日志系统配置。部署到目标应用 files/log_config.json（root 推送），60秒内自动热加载。文件不存在时用默认值。",
+
+  "logLevel": "info",
+  "_logLevel说明": "debug/info/warn/error。debug=全量；info=默认；warn=仅警告；error=仅错误（附带堆栈+通知栏）",
+
+  "maxFileSizeMb": 20,
+  "_maxFileSizeMb说明": "tip.txt 单文件上限，超限自动轮转为 tip.1.txt/tip.2.txt（共保留约 3 份）"
+}
